@@ -17,9 +17,9 @@ Sub VBA()
         columnWidth(i) = 0
     Next i
     
-    '///
+    
     '/// go through range to calculate maximum lengths of each column
-    '///
+    
 
    
     For Each Row In selectedRange.Rows
@@ -58,11 +58,7 @@ Sub VBA()
             currentColumnWidth = columnWidth(columnCounter)
             Dim extraSpaces As Integer
             
-            '///
             '/// if statement that creates a temporary variable to store and then checks to see if its a hyperlink.
-            '///
-           
-           
            
             '///Calls temporary variable
             tempCell = cell.Value
