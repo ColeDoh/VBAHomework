@@ -12,6 +12,10 @@ Sub VBA()
     totalColumns = selectedRange.Columns.Count
 
     Dim columnWidth(50) As String
+    
+    '///
+    '/// init lengths of columns
+    '///
 
     For i = 0 To totalColumns
         columnWidth(i) = 0
@@ -37,7 +41,7 @@ Sub VBA()
             End If
 
             columnCounter = columnCounter + 1
-            
+             '/// Debug.Print cell.Address, " ", cell.Value, "->", Len(cell.Value)
 
         Next cell
 
@@ -47,6 +51,10 @@ Sub VBA()
     Dim currentLine As String
     
     rowCounter = 0
+    
+    '///
+    '/// go through range to calculate maximum lengths of each column
+    '///
     For Each Row In selectedRange.Rows
 
         columnCounter = 0
