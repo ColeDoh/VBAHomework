@@ -61,11 +61,11 @@ Sub VBA()
             '/// if statement that creates a temporary variable to store and then checks to see if its a hyperlink.
            
             '///Calls temporary variable
-            tempCell = cell.Value
+            temporaryCell = cell.Value
             '///if statement that checks if there is a "!" in the cell. If there is one then it excludes it from printing out.
             If cell.Hyperlinks.Count > 0 And Not InStr(1, cell.Value, "!") > 0 And InStr(1, cell.Value, " ") > 0 Then
-            tempCell2 = Replace(cell.Hyperlinks(1).Address, " ", "%20")
-            cell.Value = "[" + cell.Value + "]" + "(" + tempCell2 + ")"
+            temporaryCell2 = Replace(cell.Hyperlinks(1).Address, " ", "%20")
+            cell.Value = "[" + cell.Value + "]" + "(" + temporaryCell2 + ")"
             ElseIf cell.Hyperlinks.Count > 0 And Not InStr(1, cell.Value, "!") > 0 Then
             '///Here it links to the hyperlink address
             cell.Value = "[" + cell.Value + "]" + "(" + cell.Hyperlinks(1).Address + ")"
