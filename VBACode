@@ -1,138 +1,125 @@
-Sub VBA()
-   Dim cell As Range
-    Dim selectedRange As Range
+Sub VbaRedo()
 
-    Set selectedRange = Application.Selection
+'All of the variables I use
+Dim filename As String, lineText As String
 
-    Dim rowCounter As Integer
-    Dim columnCounter As Integer
-    Dim totalColumns As Integer
-    Dim currentColumnWidth As Integer
+Dim myrng As Range
+Dim ColCount As Integer
+Dim i, j As Integer
+Dim ColumnLongestText() As Integer
+Dim LongestTextInCells As Integer
+Dim TempText As String
+Dim DashLines_Len As Integer
+Dim k As Integer
+Dim flg As Boolean
+Dim flg1 As Boolean
+Dim Hyperlink_Text As String
 
-    totalColumns = selectedRange.Columns.Count
+'First selecting my range
+Set myrng = Selection
+ColCount = 1
 
-    Dim columnWidth(50) As String
-    
-    '///
-    '/// init lengths of columns
-    '///
-
-    For i = 0 To totalColumns
-        columnWidth(i) = 0
-    Next i
-    
-    
-    '/// go through range to calculate maximum lengths of each column
-    
-
-   
-    For Each Row In selectedRange.Rows
-
-        columnCounter = 0
-
-        For Each cell In Row.Cells
-
-            currentColumnWidth = Len(cell.Value)
-
-            If (currentColumnWidth > columnWidth(columnCounter)) Then
-
-                columnWidth(columnCounter) = currentColumnWidth
-
+'Checks to see if the interior color is orange or yellow or blue. I used the interior.ColorIndex function for each color. This loops through each row.
+For j = 1 To myrng.Columns.Count
+    LongestTextInCells = 0
+    If Cells(1, j).Interior.ColorIndex = 37 Then
+        For i = 1 To myrng.Rows.Count
+            If myrng.Cells(i, j).Interior.ColorIndex <> 45 And myrng.Cells(i, j).Interior.ColorIndex <> 6 Then
+                If myrng.Cells(i, j).Hyperlinks.Count > 0 Then
+                    Hyperlink_Text = "[" & myrng.Cells(i, j) & "](" & myrng.Cells(i, j).Hyperlinks.Item(1).Address & ")"
+                    If Len(Hyperlink_Text) > LongestTextInCells Then
+                        LongestTextInCells = Len(Hyperlink_Text)
+                    End If
+                Else
+                    If Len(myrng.Cells(i, j)) > LongestTextInCells Then
+                        LongestTextInCells = Len(myrng.Cells(i, j))
+                    End If
+                End If
+             ElseIf myrng.Cells(i, j).Interior.ColorIndex = 6 And myrng.Cells(i, j).Hyperlinks.Count = 0 Then
+                    If Len(myrng.Cells(i, j)) > LongestTextInCells Then
+                        LongestTextInCells = Len(myrng.Cells(i, j))
+                    End If
             End If
+        Next i
+        'This puts it into an array and places the longest text cell into the first column.
+        ReDim Preserve ColumnLongestText(ColCount)
+        ColumnLongestText(ColCount) = LongestTextInCells
+        ColCount = ColCount + 1
+    End If
+'Now it loops all the way back to the begining where it goes through the next column.
+Next j
 
-            columnCounter = columnCounter + 1
-             '/// Debug.Print cell.Address, " ", cell.Value, "->", Len(cell.Value)
 
-        Next cell
-
-    Next Row
-    
-    
-    Dim currentLine As String
-    
-    rowCounter = 0
-    
-    '///
-    '/// go through range to calculate maximum lengths of each column
-    '///
-    For Each Row In selectedRange.Rows
-
-        columnCounter = 0
-
-        currentLine = "|"
-
-        For Each cell In Row.Cells
-
-            currentColumnWidth = columnWidth(columnCounter)
-            Dim extraSpaces As Integer
-            
-            '/// if statement that creates a temporary variable to store and then checks to see if its a hyperlink.
-           
-            '///Calls temporary variable
-            temporaryCell = cell.Value
-            '///if statement that checks if there is a "!" in the cell. If there is one then it excludes it from printing out.
-            If cell.Hyperlinks.Count > 0 And Not InStr(1, cell.Value, "!") > 0 And InStr(1, cell.Value, " ") > 0 Then
-            temporaryCell2 = Replace(cell.Hyperlinks(1).Address, " ", "%20")
-            cell.Value = "[" + cell.Value + "]" + "(" + temporaryCell2 + ")"
-            ElseIf cell.Hyperlinks.Count > 0 And Not InStr(1, cell.Value, "!") > 0 Then
-            '///Here it links to the hyperlink address
-            cell.Value = "[" + cell.Value + "]" + "(" + cell.Hyperlinks(1).Address + ")"
-            End If
-            '///This is a simple if statement that checks to see if the cell is bolded. Using markdown language "__" makes the cell bold in markdown.
-            If cell.Font.Bold = True Then
-            cell.Value = "__" + cell.Value + "__"
-            End If
-            
-            currentLine = currentLine & " "
-            currentLine = currentLine & cell.Value
-            extraSpaces = currentColumnWidth - Len(cell.Value)
-
-            For j = 0 To extraSpaces
-
-                currentLine = currentLine & " "
-
-            Next j
-
-            currentLine = currentLine & " |"
-
-            columnCounter = columnCounter + 1
-            
-
-        Next cell
-
-        Debug.Print currentLine
-
-        If (rowCounter = 0) Then
-
-            currentLine = "|"
-            columnCounter = 0
-
-            For j = 0 To (totalColumns - 1)
-
-                currentLine = currentLine
-                currentColumnWidth = columnWidth(columnCounter)
-                currentLine = currentLine & "-"
-
-                For k = 0 To currentColumnWidth
-
-                    currentLine = currentLine & "-"
-                Next k
-
-                currentLine = currentLine & "-|"
-                columnCounter = columnCounter + 1
-
-            Next j
-    
-            Debug.Print currentLine
+i = 1
+TempText = ""
+flg1 = False: ColCount = 1
+For j = 1 To myrng.Columns.Count
+    If Cells(i, j).Interior.ColorIndex = 37 Then
+        flg1 = True
+        TempText = TempText & "|"
+        TempText = TempText & Cells(i, j)
+        If Len(Cells(i, j)) < ColumnLongestText(ColCount) Then
+            TempText = TempText & Application.WorksheetFunction.Rept(" ", ColumnLongestText(ColCount) - Len(Cells(i, j)))
         End If
+        ColCount = ColCount + 1
+    End If
+Next j
 
-        rowCounter = rowCounter + 1
+'This is a loop where I am inserting the markdown format of dashes and vertical lines.
+If flg1 = True Then
+    TempText = TempText & "|"
+    Debug.Print TempText
+    ColCount = 1
+    TempText = ""
+    For k = 1 To myrng.Columns.Count
+        If Cells(i, k).Interior.ColorIndex = 37 Then
+            TempText = TempText & "|"
+            TempText = TempText & Application.WorksheetFunction.Rept("-", ColumnLongestText(ColCount))
+            ColCount = ColCount + 1
+        End If
+    Next k
+    TempText = TempText & "|"
+    Debug.Print TempText
+End If
 
-    Next Row
-    
-
-
-
-
+'This is another for loop to check and see if it is a hyperlink and checking color index.
+If flg1 = True Then
+    For i = 1 To myrng.Rows.Count
+    TempText = "": ColCount = 1
+        For j = 1 To myrng.Columns.Count
+        If Cells(1, j).Interior.ColorIndex = 37 Then
+            flg = False
+                If myrng.Cells(i, j).Interior.ColorIndex <> 45 And myrng.Cells(i, j).Interior.ColorIndex <> 6 Then
+                    flg = True
+                ElseIf myrng.Cells(i, j).Interior.ColorIndex = 6 And myrng.Cells(i, j).Hyperlinks.Count = 0 Then
+                    flg = True
+                End If
+                
+            'loop to print out the hyperlinks and make them clickable on markdown format.
+                If flg = True Then
+                    TempText = TempText & "|"
+                    If myrng.Cells(i, j).Hyperlinks.Count > 0 Then
+                    'This makes it clickable on markdown, hyperlinks.Adress is a function I had to look up for this part
+                        Hyperlink_Text = "[" & myrng.Cells(i, j) & "](" & myrng.Cells(i, j).Hyperlinks.Item(1).Address & ")"
+                        TempText = TempText & Hyperlink_Text
+                        If Len(Hyperlink_Text) < ColumnLongestText(ColCount) Then
+                            TempText = TempText & Application.WorksheetFunction.Rept(" ", ColumnLongestText(ColCount) - Len(Hyperlink_Text))
+                        End If
+                    Else
+                        TempText = TempText & myrng.Cells(i, j)
+                        If Len(myrng.Cells(i, j)) < ColumnLongestText(ColCount) Then
+                            TempText = TempText & Application.WorksheetFunction.Rept(" ", ColumnLongestText(ColCount) - Len(myrng.Cells(i, j)))
+                        End If
+                    End If
+                    ColCount = ColCount + 1
+                Else
+                TempText = TempText & "|"
+                End If
+        End If
+        Next j
+        TempText = TempText & "|"
+        Debug.Print TempText
+    Next i
+End If
 End Sub
 
