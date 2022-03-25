@@ -1,5 +1,4 @@
 Sub VbaRedo()
-
 'All of the variables I use
 Dim filename As String, lineText As String
 
@@ -89,16 +88,21 @@ If flg1 = True Then
         For j = 1 To myrng.Columns.Count
         If Cells(1, j).Interior.ColorIndex = 37 Then
             flg = False
-                If myrng.Cells(i, j).Interior.ColorIndex <> 45 And myrng.Cells(i, j).Interior.ColorIndex <> 6 Then
+                If myrng.Cells(i, j).Interior.ColorIndex <> 45 Then
                     flg = True
                 ElseIf myrng.Cells(i, j).Interior.ColorIndex = 6 And myrng.Cells(i, j).Hyperlinks.Count = 0 Then
                     flg = True
                 End If
-                
+               
             'loop to print out the hyperlinks and make them clickable on markdown format.
                 If flg = True Then
                     TempText = TempText & "|"
-                    If myrng.Cells(i, j).Hyperlinks.Count > 0 Then
+                    If myrng.Cells(i, j).Hyperlinks.Count > 0 And myrng.Cells(i, j).Interior.ColorIndex = 6 Then
+                        TempText = TempText & myrng.Cells(i, j)
+                        If Len(Hyperlink_Text) < ColumnLongestText(ColCount) Then
+                            TempText = TempText & Application.WorksheetFunction.Rept(" ", ColumnLongestText(ColCount) - Len(Hyperlink_Text))
+                        End If
+                    ElseIf myrng.Cells(i, j).Hyperlinks.Count > 0 Then
                     'This makes it clickable on markdown, hyperlinks.Adress is a function I had to look up for this part
                         Hyperlink_Text = "[" & myrng.Cells(i, j) & "](" & myrng.Cells(i, j).Hyperlinks.Item(1).Address & ")"
                         TempText = TempText & Hyperlink_Text
