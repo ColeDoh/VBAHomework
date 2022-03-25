@@ -1,4 +1,5 @@
 Sub VbaRedo()
+
 'All of the variables I use
 Dim filename As String, lineText As String
 
@@ -13,11 +14,9 @@ Dim k As Integer
 Dim flg As Boolean
 Dim flg1 As Boolean
 Dim Hyperlink_Text As String
-
 'First selecting my range
 Set myrng = Selection
 ColCount = 1
-
 'Checks to see if the interior color is orange or yellow or blue. I used the interior.ColorIndex function for each color. This loops through each row.
 For j = 1 To myrng.Columns.Count
     LongestTextInCells = 0
@@ -81,9 +80,13 @@ If flg1 = True Then
     Debug.Print TempText
 End If
 
+k = 1
 'This is another for loop to check and see if it is a hyperlink and checking color index.
 If flg1 = True Then
-    For i = 1 To myrng.Rows.Count
+    If ActiveCell.Row = 1 Then
+        k = k + 1
+    End If
+    For i = k To myrng.Rows.Count
     TempText = "": ColCount = 1
         For j = 1 To myrng.Columns.Count
         If Cells(1, j).Interior.ColorIndex = 37 Then
@@ -96,6 +99,7 @@ If flg1 = True Then
                
             'loop to print out the hyperlinks and make them clickable on markdown format.
                 If flg = True Then
+                   
                     TempText = TempText & "|"
                     If myrng.Cells(i, j).Hyperlinks.Count > 0 And myrng.Cells(i, j).Interior.ColorIndex = 6 Then
                         TempText = TempText & myrng.Cells(i, j)
