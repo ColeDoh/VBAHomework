@@ -22,6 +22,7 @@ For j = 1 To myrng.Columns.Count
     LongestTextInCells = 0
     If Cells(1, j).Interior.ColorIndex = 37 Then
         For i = 1 To myrng.Rows.Count
+        'this if statement sees if the color of the cell is not orange and not yellow and prints out the hyperlink.
             If myrng.Cells(i, j).Interior.ColorIndex <> 45 And myrng.Cells(i, j).Interior.ColorIndex <> 6 Then
                 If myrng.Cells(i, j).Hyperlinks.Count > 0 Then
                     Hyperlink_Text = "[" & myrng.Cells(i, j) & "](" & myrng.Cells(i, j).Hyperlinks.Item(1).Address & ")"
@@ -66,6 +67,7 @@ Next j
 'This is a loop where I am inserting the markdown format of dashes and vertical lines.
 If flg1 = True Then
     TempText = TempText & "|"
+    'This prints out the Day, Topic, and Due headers at the top of the markdown
     Debug.Print TempText
     ColCount = 1
     TempText = ""
@@ -83,14 +85,17 @@ End If
 k = 1
 'This is another for loop to check and see if it is a hyperlink and checking color index.
 If flg1 = True Then
+'This if statement checks if the selection range is in the top row of the sheet
     If ActiveCell.Row = 1 Then
         k = k + 1
     End If
     For i = k To myrng.Rows.Count
     TempText = "": ColCount = 1
         For j = 1 To myrng.Columns.Count
+        'if the cell is under a blue column it will print out the cells under that column
         If Cells(1, j).Interior.ColorIndex = 37 Then
             flg = False
+            'this if statement checks if the cell color is not orange return true
                 If myrng.Cells(i, j).Interior.ColorIndex <> 45 Then
                     flg = True
                 ElseIf myrng.Cells(i, j).Interior.ColorIndex = 6 And myrng.Cells(i, j).Hyperlinks.Count = 0 Then
@@ -101,6 +106,7 @@ If flg1 = True Then
                 If flg = True Then
                    
                     TempText = TempText & "|"
+                    'if a cell has a hyperlink and is yellow then it will print out just the text in the cell, not with the hyperlink. Interior.colorIndex is the index color for yellow.
                     If myrng.Cells(i, j).Hyperlinks.Count > 0 And myrng.Cells(i, j).Interior.ColorIndex = 6 Then
                         TempText = TempText & myrng.Cells(i, j)
                         If Len(Hyperlink_Text) < ColumnLongestText(ColCount) Then
@@ -130,4 +136,3 @@ If flg1 = True Then
     Next i
 End If
 End Sub
-
